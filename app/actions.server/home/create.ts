@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs } from "react-router";
-import { db } from "~/utils/db.server";
 import type { ActionResult } from ".";
+import { createLog } from "~/repositories.server/log";
 
 export async function createAction({
   request,
@@ -20,24 +20,11 @@ export async function createAction({
 
   try {
     // Create new log entry
-    await db.log.create({
-      data: {
-        userName,
-        description,
-        eventDate: new Date(eventDate),
-        location,
-        createdAt: new Date(),
-      },
-    });
-
-    console.log({
-      data: {
-        userName,
-        description,
-        eventDate: new Date(eventDate),
-        location,
-        createdAt: new Date(),
-      },
+    await createLog({
+      userName,
+      description,
+      eventDate,
+      location,
     });
 
     return { success: true, message: "Log entry created successfully" };
