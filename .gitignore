@@ -4,3 +4,6 @@
 # React Router
 /.react-router/
 /build/
+
+dev.db
+dev.db-journal
