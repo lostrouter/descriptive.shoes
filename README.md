@@ -33,3 +33,11 @@ Create a production build:
 ```bash
 npm run build
 ```
+
+### Testing
+
+To run unit tests locally in watch mode
+
+```bash
+npm run test
+```
