@@ -1,6 +1,7 @@
 import type { ActionFunctionArgs } from "react-router";
 import { createAction } from "./create";
 import { deleteAction } from "./delete";
+import { updateAction } from "./update";
 
 // Define possible action results
 export type ActionResult =
@@ -21,6 +22,7 @@ export async function homeAction(
   > = {
     create: createAction,
     delete: deleteAction,
+    update: updateAction,
     // Add other actions as needed
   };
 

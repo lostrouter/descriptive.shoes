@@ -14,15 +14,7 @@ import InlineLogEntryForm from "~/components/InlineLogEntryForm";
 import { useEffect, useState } from "react";
 import { db } from "~/utils/db.server";
 import { homeAction } from "~/actions.server/home";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog";
+import DialogEntryForm from "~/components/DialogEntryForm";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -52,7 +44,7 @@ export async function loader(_args: LoaderFunctionArgs) {
   try {
     // Fetch log entries from the database
     const logs = await db.log.findMany({
-      orderBy: { eventDate: "desc" },
+      orderBy: { createdAt: "desc" },
     });
 
     // Format the dates as ISO strings for the frontend
@@ -76,6 +68,7 @@ export default function Index({
   actionData,
 }: Route.ComponentProps) {
   const { logEntries } = loaderData;
+  const [lastUserName, setLastUsername] = useState("");
 
   // Column helper for type safety
   const columnHelper = createColumnHelper<LogEntry>();
@@ -110,110 +103,35 @@ export default function Index({
     columnHelper.display({
       id: "actions",
       header: "Actions",
-      cell: (info) => (
-        <div className="flex gap-2">
-          <Dialog>
-            <DialogTrigger asChild>
+      cell: (info) => {
+        const date = new Date(info.row.original.eventDate);
+
+        const offset = date.getTimezoneOffset() * 60000;
+        const localDate = new Date(date.getTime() - offset)
+          .toISOString()
+          .slice(0, 16);
+
+        return (
+          <div className="flex gap-2">
+            <DialogEntryForm
+              data={{
+                ...info.row.original,
+                eventDate: localDate,
+              }}
+            />
+            <Form method="post" style={{ display: "inline" }}>
+              <input type="hidden" name="_action" value="delete" />
+              <input type="hidden" name="id" value={info.row.original.id} />
               <button
                 type="submit"
-                className="text-[var(--secondary-foreground)] hover:underline bg-transparent border-0 p-0 cursor-pointer"
+                className="text-[var(--destructive)] hover:underline bg-transparent border-0 p-0 cursor-pointer"
               >
-                Edit
+                Delete
               </button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px]">
-              <DialogHeader>
-                <DialogTitle>Edit Log</DialogTitle>
-                <DialogDescription>
-                  Make changes to your log here. Click save when you're done.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* User Name */}
-                <div>
-                  <label
-                    htmlFor="userName"
-                    className="block text-sm font-medium text-[var(--muted-foreground)] mb-1"
-                  >
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    id="userName"
-                    name="userName"
-                    required
-                    className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--border)] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)] text-[var(--foreground)]"
-                  />
-                </div>
-
-                {/* Description */}
-                <div>
-                  <label
-                    htmlFor="description"
-                    className="block text-sm font-medium text-[var(--muted-foreground)] mb-1"
-                  >
-                    Description
-                  </label>
-                  <input
-                    type="text"
-                    id="description"
-                    name="description"
-                    required
-                    className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--border)] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)] text-[var(--foreground)]"
-                  />
-                </div>
-
-                {/* Event Date */}
-                <div>
-                  <label
-                    htmlFor="eventDate"
-                    className="block text-sm font-medium text-[var(--muted-foreground)] mb-1"
-                  >
-                    Event Date
-                  </label>
-                  <input
-                    type="datetime-local"
-                    id="eventDate"
-                    name="eventDate"
-                    required
-                    className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--border)] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)] text-[var(--foreground)]"
-                  />
-                </div>
-
-                {/* Location */}
-                <div>
-                  <label
-                    htmlFor="location"
-                    className="block text-sm font-medium text-[var(--muted-foreground)] mb-1"
-                  >
-                    Location
-                  </label>
-                  <input
-                    type="text"
-                    id="location"
-                    name="location"
-                    required
-                    className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--border)] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)] text-[var(--foreground)]"
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <button type="submit">Save changes</button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-          <Form method="post" style={{ display: "inline" }}>
-            <input type="hidden" name="_action" value="delete" />
-            <input type="hidden" name="id" value={info.row.original.id} />
-            <button
-              type="submit"
-              className="text-[var(--destructive)] hover:underline bg-transparent border-0 p-0 cursor-pointer"
-            >
-              Delete
-            </button>
-          </Form>
-        </div>
-      ),
+            </Form>
+          </div>
+        );
+      },
     }),
   ];
 
@@ -223,8 +141,6 @@ export default function Index({
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-
-  const [lastUserName, setLastUsername] = useState("");
 
   // When a form is submitted
   const handleFormSubmit = (submittedUserName: string) => {
