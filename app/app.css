@@ -1,15 +1,69 @@
 @import "tailwindcss";
 
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+@layer base {
+  html {
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif,
+      "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+      "Noto Color Emoji";
+  }
+
+  /* Light Theme (default) */
+  :root {
+    --background: #faf4ed; /* rosePineDawn.base */
+    --foreground: #575279; /* rosePineDawn.text */
+    --card: #fffaf3; /* rosePineDawn.surface */
+    --card-foreground: #575279; /* rosePineDawn.text */
+    --popover: #fffaf3; /* rosePineDawn.surface */
+    --popover-foreground: #575279; /* rosePineDawn.text */
+    --primary: #907aa9; /* rosePineDawn.iris */
+    --primary-foreground: #ffffff;
+    --secondary: #f2e9e1; /* rosePineDawn.overlay */
+    --secondary-foreground: #575279; /* rosePineDawn.text */
+    --muted: #9893a5; /* rosePineDawn.muted */
+    --muted-foreground: #797593; /* rosePineDawn.subtle */
+    --accent: #286983; /* rosePineDawn.pine */
+    --accent-foreground: #ffffff;
+    --destructive: #b4637a; /* rosePineDawn.love */
+    --destructive-foreground: #ffffff;
+    --border: #dfdad9; /* rosePineDawn.highlightMed */
+    --input: #f4ede8; /* rosePineDawn.highlightLow */
+    --ring: #286983; /* rosePineDawn.pine */
+    --radius: 0.5rem;
+  }
+
+  /* Dark Theme */
+  .dark {
+    --background: #191724; /* rosePine.base */
+    --foreground: #e0def4; /* rosePine.text */
+    --card: #1f1d2e; /* rosePine.surface */
+    --card-foreground: #e0def4; /* rosePine.text */
+    --popover: #1f1d2e; /* rosePine.surface */
+    --popover-foreground: #e0def4; /* rosePine.text */
+    --primary: #c4a7e7; /* rosePine.iris */
+    --primary-foreground: #191724; /* rosePine.base */
+    --secondary: #26233a; /* rosePine.overlay */
+    --secondary-foreground: #e0def4; /* rosePine.text */
+    --muted: #6e6a86; /* rosePine.muted */
+    --muted-foreground: #908caa; /* rosePine.subtle */
+    --accent: #31748f; /* rosePine.pine */
+    --accent-foreground: #191724; /* rosePine.base */
+    --destructive: #eb6f92; /* rosePine.love */
+    --destructive-foreground: #191724; /* rosePine.base */
+    --border: #403d52; /* rosePine.highlightMed */
+    --input: #21202e; /* rosePine.highlightLow */
+    --ring: #31748f; /* rosePine.pine */
+  }
 }
 
-html,
-body {
-  @apply bg-white dark:bg-gray-950;
+@layer base {
+  body {
+    @apply bg-[var(--background)] text-[var(--foreground)];
+  }
+}
 
-  @media (prefers-color-scheme: dark) {
+/* Enable dark mode based on system preference */
+@media (prefers-color-scheme: dark) {
+  .media-dark {
     color-scheme: dark;
   }
 }
