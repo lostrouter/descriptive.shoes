@@ -28,7 +28,7 @@ export default function InlineLogEntryForm({
 
   const resetForm = () => {
     setFormData({
-      userName: formData.userName ?? "",
+      userName: lastUserName ?? "",
       description: "",
       eventDate: new Date().toISOString().slice(0, 16), // Format for datetime-local input
       location: "",
@@ -42,6 +42,7 @@ export default function InlineLogEntryForm({
 
   return (
     <Form method="post" className="mb-6" onSubmit={handleSubmit}>
+      <input type="hidden" name="_action" value="create" />
       <div className="bg-[var(--card)] rounded-lg shadow-md border border-[var(--border)] overflow-hidden">
         <div className="p-4 bg-[var(--secondary)]">
           <h2 className="text-lg font-medium text-[var(--foreground)]">

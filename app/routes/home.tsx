@@ -1,4 +1,5 @@
 import {
+  Form,
   Link,
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
@@ -13,6 +14,7 @@ import {
 import InlineLogEntryForm from "~/components/InlineLogEntryForm";
 import { useEffect, useState } from "react";
 import { db } from "~/utils/db.server";
+import { homeAction } from "~/actions.server/home";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -33,45 +35,8 @@ export interface LogEntry {
 }
 
 // Action function to handle form submissions
-export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-
-  const userName = formData.get("userName") as string;
-  const description = formData.get("description") as string;
-  const eventDate = formData.get("eventDate") as string;
-  const location = formData.get("location") as string;
-
-  // Validate form data
-  if (!userName || !description || !eventDate || !location) {
-    return { error: "All fields are required" };
-  }
-
-  try {
-    // Create new log entry
-    await db.log.create({
-      data: {
-        userName,
-        description,
-        eventDate: new Date(eventDate),
-        location,
-        createdAt: new Date(),
-      },
-    });
-
-    console.log({
-      data: {
-        userName,
-        description,
-        eventDate: new Date(eventDate),
-        location,
-        createdAt: new Date(),
-      },
-    });
-
-    return { success: true };
-  } catch (error) {
-    return { error: "Failed to create log entry" };
-  }
+export async function action(args: ActionFunctionArgs) {
+  return homeAction(args);
 }
 
 // Loader function to provide data to the route
@@ -145,12 +110,16 @@ export default function Index({
           >
             Edit
           </Link>
-          <Link
-            to={`/delete/${info.row.original.id}`}
-            className="text-rosePineDawn-love dark:text-rosePine-love hover:underline"
-          >
-            Delete
-          </Link>
+          <Form method="post" style={{ display: "inline" }}>
+            <input type="hidden" name="_action" value="delete" />
+            <input type="hidden" name="id" value={info.row.original.id} />
+            <button
+              type="submit"
+              className="text-[var(--destructive)] hover:underline bg-transparent border-0 p-0 cursor-pointer"
+            >
+              Delete
+            </button>
+          </Form>
         </div>
       ),
     }),
@@ -193,7 +162,7 @@ export default function Index({
       />
 
       {/* Error message display */}
-      {actionData?.error && (
+      {actionData && !actionData.success && (
         <div className="mb-4 p-4 bg-[var(--destructive)] bg-opacity-10 border border-[var(--destructive)] rounded-md text-[var(--destructive-foreground)]">
           {actionData.error}
         </div>
