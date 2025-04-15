@@ -1,0 +1,19 @@
+{
+  "name": "descriptive.shoes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "/dist/index.js",
+  "scripts": {
+    "test": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lostrouter/descriptive.shoes.git"
+  },
+  "author": "Michael Steinberg",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/lostrouter/descriptive.shoes/issues"
+  },
+  "homepage": "https://github.com/lostrouter/descriptive.shoes#readme"
+}
